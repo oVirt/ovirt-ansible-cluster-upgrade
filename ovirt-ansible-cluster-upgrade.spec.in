@@ -35,10 +35,10 @@ sh build.sh install
 %{_datadir}/%{ansible_roles_dir}/%{roleprefix}%{rolename}
 %{_datadir}/%{ansible_roles_dir}/%{roleprefix_legacy}%{rolename}
 
-%doc %{_pkgdocdir}/README.md
-%doc %{_pkgdocdir}/examples/*yml
+%doc README.md
+%doc examples/
 
-%license %{_pkgdocdir}/LICENSE
+%license LICENSE
 
 %changelog
 * Thu Nov 16 2017 Ondra Machacek <omachace@redhat.com> - 1.0.0-0

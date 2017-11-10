@@ -39,15 +39,14 @@ install() {
   echo "Installing data..."
   mkdir -p $PKG_DATA_DIR
   mkdir -p $PKG_DOC_DIR
+
+  # Create a symlink, so legacy role name does work:
   ln -f -s $PKG_DATA_DIR_ORIG $ROLENAME_LEGACY 
   
   cp -pR defaults/ $PKG_DATA_DIR
   cp -pR library/ $PKG_DATA_DIR
   cp -pR tasks/ $PKG_DATA_DIR
-  
-  cp -pR examples/ $PKG_DOC_DIR
-  cp -p LICENSE $PKG_DOC_DIR
-  cp -p README.md $PKG_DOC_DIR
+
   echo "Installation done."
 }
 
