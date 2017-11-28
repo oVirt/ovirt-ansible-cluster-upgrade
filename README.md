@@ -1,7 +1,7 @@
 oVirt Cluster Upgrade
 =========
 
-The `ovirt-cluster-upgrade` role iterates through all the hosts in a cluster and upgrades them.
+The `oVirt.cluster-upgrade` role iterates through all the hosts in a cluster and upgrades them.
 
 Requirements
 ------------
@@ -50,7 +50,7 @@ Example Playbook
       - openshift-node-image
 
   roles:
-    - ovirt-cluster-upgrade
+    - oVirt.cluster-upgrade
 ```
 
 [![asciicast](https://asciinema.org/a/122760.png)](https://asciinema.org/a/122760)

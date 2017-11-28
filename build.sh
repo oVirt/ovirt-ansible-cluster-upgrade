@@ -4,7 +4,7 @@ VERSION="1.1.1"
 MILESTONE=master
 RPM_RELEASE="0.1.$MILESTONE.$(date -u +%Y%m%d%H%M%S)"
 
-ROLE_NAME="ovirt.cluster-upgrade"
+ROLE_NAME="oVirt.cluster-upgrade"
 PACKAGE_NAME="ovirt-ansible-cluster-upgrade"
 PREFIX=/usr/local
 DATAROOT_DIR=$PREFIX/share

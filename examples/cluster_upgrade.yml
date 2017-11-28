@@ -21,4 +21,4 @@
       - myhost2
 
   roles:
-    - ovirt.cluster-upgrade
+    - oVirt.cluster-upgrade
