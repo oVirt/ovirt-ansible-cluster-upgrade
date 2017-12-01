@@ -15,11 +15,18 @@ Url:            http://www.ovirt.org
 
 Requires: ansible >= 2.4
 
-Obsoletes: ovirt-ansible-roles <= 1.1.1
-
 %description
 This Ansible role provide funtionality to upgrade cluster of hosts in oVirt engine,
 using oVirt engine API.
+
+%pretrans -p <lua>
+-- Remove the legacy directory before installing the symlink. This is known issue in RPM:
+-- https://fedoraproject.org/wiki/Packaging:Directory_Replacement
+path = "%{_datadir}/%{ansible_roles_dir}/%{roleprefix_legacy}%{rolename}"
+st = posix.stat(path)
+if st and st.type == "directory" then
+  os.execute('rm -rf "'..path..'"')
+end
 
 %prep
 %setup -c -q
