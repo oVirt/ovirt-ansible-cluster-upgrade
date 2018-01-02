@@ -24,7 +24,7 @@ install:
   - ansible --version
 
 script:
-  # Run sytax checks and linters
+  # Run syntax checks and linters
   - tox
 
 notifications:
