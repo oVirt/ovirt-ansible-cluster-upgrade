@@ -31,11 +31,6 @@
       when: ovirt_hosts | length == 0
 
     - block:
-        - name: Init failed_host_names and succeed_host_names list
-          set_fact:
-            failed_host_names: []
-            succeed_host_names: []
-
         - name: Get cluster facts
           ovirt_clusters_facts:
             auth: "{{ ovirt_auth }}"
@@ -118,15 +113,6 @@
           with_items:
             - "{{ pinned_vms_names | default([]) }}"
           when: "stop_non_migratable_vms"
-
-        - name: Print info about host which was updated
-          debug:
-            msg: "Following hosts was successfully updated: {{ succeed_host_names }}"
-
-        - name: Fail the playbook, if some hosts wasn't updated
-          fail:
-            msg: "The cluster upgrade failed. Hosts {{ failed_host_names }} wasn't updated."
-          when: "failed_host_names | length > 0"
 
   always:
     - name: Logout from oVirt
