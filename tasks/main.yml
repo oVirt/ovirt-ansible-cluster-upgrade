@@ -83,7 +83,16 @@
 
         # Update only those hosts that aren't in list of hosts were VMs are pinned
         # or if stop_non_migratable_vms is enabled, which means we stop pinned VMs
-        - include: upgrade.yml
+        - name: Upgrade host
+          # TODO: change to ovirt_hosts, when Ansible 2.6 is out:
+          ovirt_hosts_26:
+            auth: "{{ ovirt_auth }}"
+            name: "{{ item.name }}"
+            state: upgraded
+            check_upgrade: "{{ check_upgrade }}"
+            reboot_after_upgrade: "{{ reboot_after_upgrade }}"
+            timeout: "{{ upgrade_timeout }}"
+          register: host_upgraded
           with_items:
             - "{{ ovirt_hosts }}"
           when: "item.id not in host_ids or stop_non_migratable_vms"

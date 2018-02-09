@@ -21,6 +21,7 @@ Role Variables
 | host_statuses           | [UP]                  | List of host statuses. If a host is in any of the specified statuses then it will be upgraded. |
 | host_names              | [\*]                  | List of host names to be upgraded.        |
 | check_upgrade           | false                 | If true, run check_for_upgrade action on all hosts before executing upgrade on them. If false, run upgrade only for hosts with available upgrades and ignore all other hosts. |
+| reboot_after_upgrade    | true                  | If true reboot hosts after successful upgrade. |
 
 Dependencies
 ------------
