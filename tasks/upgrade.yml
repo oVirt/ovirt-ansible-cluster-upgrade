@@ -1,0 +1,9 @@
+- name: Upgrade host
+  # TODO: change to ovirt_hosts, when Ansible 2.6 is out:
+  ovirt_hosts_26:
+    auth: "{{ ovirt_auth }}"
+    name: "{{ item.name }}"
+    state: upgraded
+    check_upgrade: "{{ check_upgrade }}"
+    reboot_after_upgrade: "{{ reboot_after_upgrade }}"
+    timeout: "{{ upgrade_timeout }}"
