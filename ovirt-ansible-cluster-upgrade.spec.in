@@ -50,6 +50,9 @@ sh build.sh install
 %license LICENSE
 
 %changelog
+* Thu Mar 15 2018 Ondra Machacek <omachace@redhat.com> - 1.1.6-1
+- Fail the role if any host fail to upgrade rhbz#1539776.
+
 * Wed Feb 14 2018 Ondra Machacek <omachace@redhat.com> - 1.1.5-1
 - Add use_maintenance_policy parameter rhbz#1539761.
 - Add new reboot_after_upgrade parameter rhbz#1539774.
