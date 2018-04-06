@@ -15,9 +15,7 @@
     cluster_scheduling_policy: "{{ ovirt_scheduling_policies[0].name }}"
 
 - name: Get API facts
-  # TODO: Change when Ansible 2.5 is released:
-  # ovirt_api_facts:
-  ovirt_api_facts_internal_25:
+  ovirt_api_facts:
     auth: "{{ ovirt_auth }}"
   check_mode: "no"
 

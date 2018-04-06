@@ -6,8 +6,8 @@ The `oVirt.cluster-upgrade` role iterates through all the hosts in a cluster and
 Requirements
 ------------
 
- * Ansible version 2.4 or higher
- * Python SDK version 4 or higher
+ * Ansible version 2.5 or higher
+ * Python SDK version 4.2 or higher
 
 Role Variables
 --------------
