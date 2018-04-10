@@ -50,6 +50,9 @@ sh build.sh install
 %license LICENSE
 
 %changelog
+* Tue Apr 10 2018 Ondra Machacek <omachace@redhat.com> - 1.1.7-1
+- Require Ansible 2.5.
+
 * Thu Mar 15 2018 Ondra Machacek <omachace@redhat.com> - 1.1.6-1
 - Fail the role if any host fail to upgrade rhbz#1539776.
 
