@@ -2,22 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2016 Red Hat, Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
-#
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
@@ -26,13 +11,17 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = '''
 ---
-module: ovirt_hosts
+module: ovirt_host
 short_description: Module to manage hosts in oVirt/RHV
 version_added: "2.3"
 author: "Ondra Machacek (@machacekondra)"
 description:
     - "Module to manage hosts in oVirt/RHV"
 options:
+    id:
+        description:
+            - "ID of the host to manage."
+        version_added: "2.8"
     name:
         description:
             - "Name of the host to manage."
@@ -49,6 +38,11 @@ options:
     comment:
         description:
             - "Description of the host."
+    timeout:
+        description:
+            - "The amount of time in seconds the module should wait for the host to
+               get into desired state."
+        default: 600
     cluster:
         description:
             - "Name of the cluster, where host should be created."
@@ -63,12 +57,12 @@ options:
             - "I(True) if the public key should be used to authenticate to host."
             - "It's required in case C(password) is not set."
         default: False
+        type: bool
         aliases: ['ssh_public_key']
     kdump_integration:
         description:
             - "Specify if host will have enabled Kdump integration."
         choices: ['enabled', 'disabled']
-        default: enabled
     spm_priority:
         description:
             - "SPM priority of the host. Integer value from 1 to 10, where higher number means higher priority."
@@ -76,13 +70,16 @@ options:
         description:
             - "If True host iptables will be overridden by host deploy script."
             - "Note that C(override_iptables) is I(false) by default in oVirt/RHV."
+        type: bool
     force:
         description:
             - "If True host will be forcibly moved to desired state."
         default: False
+        type: bool
     override_display:
         description:
             - "Override the display address of all VMs on this host with specified address."
+        type: bool
     kernel_params:
         description:
             - "List of kernel boot parameters."
@@ -95,7 +92,7 @@ options:
             - "Modifying kernel boot parameters settings can lead to a host boot failure.
                Please consult the product documentation before doing any changes."
             - "Kernel boot parameters changes require host deploy and restart. The host needs
-               to be I(reinstalled) suceesfully and then to be I(rebooted) for kernel boot parameters
+               to be I(reinstalled) successfully and then to be I(rebooted) for kernel boot parameters
                to be applied."
     hosted_engine:
         description:
@@ -104,17 +101,22 @@ options:
             - "If I(undeploy) it means this host should un-deploy hosted engine
                components and this host will not function as part of the High
                Availability cluster."
+        choices:
+            - 'deploy'
+            - 'undeploy'
     power_management_enabled:
         description:
             - "Enable or disable power management of the host."
             - "For more comprehensive setup of PM use C(ovirt_host_pm) module."
         version_added: 2.4
+        type: bool
     activate:
         description:
             - "If C(state) is I(present) activate the host."
             - "This parameter is good to disable, when you don't want to change
                the state of host when using I(present) C(state)."
         default: True
+        type: bool
         version_added: 2.4
     iscsi:
         description:
@@ -128,11 +130,13 @@ options:
             - "If I(true) and C(state) is I(upgraded) run check for upgrade
                action before executing upgrade action."
         default: True
+        type: bool
         version_added: 2.4
     reboot_after_upgrade:
         description:
             - "If I(true) and C(state) is I(upgraded) reboot host after successful upgrade."
         default: True
+        type: bool
         version_added: 2.6
 extends_documentation_fragment: ovirt
 '''
@@ -143,7 +147,7 @@ EXAMPLES = '''
 
 # Add host with username/password supporting SR-IOV.
 # Note that override_iptables is false by default in oVirt/RHV:
-- ovirt_hosts:
+- ovirt_host:
     cluster: Default
     name: myhost
     address: 10.34.61.145
@@ -153,7 +157,7 @@ EXAMPLES = '''
       - intel_iommu=on
 
 # Add host using public key
-- ovirt_hosts:
+- ovirt_host:
     public_key: true
     cluster: Default
     name: myhost2
@@ -161,7 +165,7 @@ EXAMPLES = '''
     override_iptables: true
 
 # Deploy hosted engine host
-- ovirt_hosts:
+- ovirt_host:
     cluster: Default
     name: myhost2
     password: secret
@@ -170,22 +174,22 @@ EXAMPLES = '''
     hosted_engine: deploy
 
 # Maintenance
-- ovirt_hosts:
+- ovirt_host:
     state: maintenance
     name: myhost
 
 # Restart host using power management:
-- ovirt_hosts:
+- ovirt_host:
     state: restarted
     name: myhost
 
 # Upgrade host
-- ovirt_hosts:
+- ovirt_host:
     state: upgraded
     name: myhost
 
 # discover iscsi targets
-- ovirt_hosts:
+- ovirt_host:
     state: iscsidiscover
     name: myhost
     iscsi:
@@ -196,7 +200,7 @@ EXAMPLES = '''
 
 
 # login to iscsi targets
-- ovirt_hosts:
+- ovirt_host:
     state: iscsilogin
     name: myhost
     iscsi:
@@ -208,16 +212,21 @@ EXAMPLES = '''
 
 
 # Reinstall host using public key
-- ovirt_hosts:
+- ovirt_host:
     state: reinstalled
     name: myhost
     public_key: true
 
 # Remove host
-- ovirt_hosts:
+- ovirt_host:
     state: absent
     name: myhost
     force: True
+
+# Change host Name
+- ovirt_host:
+    id: 00000000-0000-0000-0000-000000000000
+    name: "new host name"
 '''
 
 RETURN = '''
@@ -263,6 +272,7 @@ class HostsModule(BaseModule):
 
     def build_entity(self):
         return otypes.Host(
+            id=self._module.params.get('id'),
             name=self.param('name'),
             cluster=otypes.Cluster(
                 name=self.param('cluster')
@@ -295,6 +305,7 @@ class HostsModule(BaseModule):
             equal(self.param('comment'), entity.comment) and
             equal(self.param('kdump_integration'), 'enabled' if entity.power_management.kdump_detection else 'disabled') and
             equal(self.param('spm_priority'), entity.spm.priority) and
+            equal(self.param('name'), entity.name) and
             equal(self.param('power_management_enabled'), entity.power_management.enabled) and
             equal(self.param('override_display'), getattr(entity.display, 'address', None)) and
             equal(
@@ -400,6 +411,7 @@ def main():
             default='present',
         ),
         name=dict(required=True),
+        id=dict(default=None),
         comment=dict(default=None),
         cluster=dict(default=None),
         address=dict(default=None),
@@ -427,6 +439,7 @@ def main():
             ['state', 'iscsilogin', ['iscsi']]
         ]
     )
+
     check_sdk(module)
 
     try:
@@ -502,7 +515,16 @@ def main():
                 action_condition=lambda h: h.update_available,
                 wait_condition=lambda h: h.status == result_state,
                 post_action=lambda h: time.sleep(module.params['poll_interval']),
-                fail_condition=hosts_module.failed_state_after_reinstall,
+                fail_condition=lambda h: hosts_module.failed_state_after_reinstall(h) or (
+                    len([
+                        event
+                        for event in events_service.list(
+                            from_=int(last_event.id),
+                            # Fail upgrade if migration fails.
+                            search='type=65 or type=140',
+                        )
+                    ]) > 0
+                ),
                 reboot=module.params['reboot_after_upgrade'],
             )
         elif state == 'iscsidiscover':
@@ -539,7 +561,7 @@ def main():
                 action='fence',
                 action_condition=lambda h: h.status == hoststate.DOWN,
                 wait_condition=lambda h: h.status in [hoststate.UP, hoststate.MAINTENANCE],
-                fail_condition=failed_state,
+                fail_condition=hosts_module.failed_state_after_reinstall,
                 fence_type='start',
             )
         elif state == 'stopped':
@@ -560,7 +582,7 @@ def main():
             ret = hosts_module.action(
                 action='fence',
                 wait_condition=lambda h: h.status == hoststate.UP,
-                fail_condition=failed_state,
+                fail_condition=hosts_module.failed_state_after_reinstall,
                 fence_type='restart',
             )
         elif state == 'reinstalled':
