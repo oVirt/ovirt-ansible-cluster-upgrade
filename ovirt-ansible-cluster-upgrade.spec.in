@@ -50,6 +50,12 @@ sh build.sh install
 %license LICENSE
 
 %changelog
+* Thu Oct 4 2018 Ondra Machacek <omachace@redhat.com> - 1.1.8-1
+- Fix issue in starting the stopped VMs (#27).
+- Increase timeout for the host upgrade (#24).
+- Add engine_fqdn support for login.
+- Add support to pass token (#23).
+
 * Tue Apr 10 2018 Ondra Machacek <omachace@redhat.com> - 1.1.7-1
 - Require Ansible 2.5.
 
