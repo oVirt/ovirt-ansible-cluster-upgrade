@@ -14,6 +14,10 @@
   set_fact:
     cluster_scheduling_policy: "{{ ovirt_scheduling_policies[0].name }}"
 
+- name: Remember the cluster scheduling policy properties
+  set_fact:
+    cluster_scheduling_policy_properties: "{{ ovirt_clusters[0].custom_scheduling_policy_properties }}"
+
 - name: Get API facts
   ovirt_api_facts:
     auth: "{{ ovirt_auth }}"

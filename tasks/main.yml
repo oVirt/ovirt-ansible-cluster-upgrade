@@ -66,6 +66,7 @@
             auth: "{{ ovirt_auth }}"
             name: "{{ cluster_name }}"
             scheduling_policy: "{{ cluster_scheduling_policy }}"
+            scheduling_policy_properties: "{{ cluster_scheduling_policy_properties }}"
           when: use_maintenance_policy and cluster_policy.changed | default(false)
 
         - name: Start again stopped VMs
