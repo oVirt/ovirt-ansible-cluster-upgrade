@@ -7,7 +7,7 @@
 
 - block:
     - name: Login to oVirt
-      ovirt_auth_26:
+      ovirt_auth:
         url: "{{ engine_url | default(lookup('env','OVIRT_URL')) | default(omit) }}"
         username: "{{ engine_user | default(lookup('env','OVIRT_USERNAME')) | default(omit) }}"
         hostname: "{{ engine_fqdn | default(lookup('env','OVIRT_HOSTNAME')) | default(omit) }}"
@@ -21,7 +21,7 @@
         - always
 
     - name: Get hosts
-      ovirt_hosts_facts:
+      ovirt_host_facts:
         auth: "{{ ovirt_auth }}"
         pattern: "cluster={{ cluster_name | mandatory }} {{ check_upgrade | ternary('', 'update_available=true') }} {{ host_names | map('regex_replace', '(.*)', 'name=\\1') | list | join(' or ') }} {{ host_statuses | map('regex_replace', '(.*)', 'status=\\1') | list | join(' or ') }}"
       check_mode: "no"
@@ -32,17 +32,17 @@
       when: ovirt_hosts | length == 0
 
     - block:
-        - include: cluster_policy.yml
+        - include_tasks: cluster_policy.yml
           when: use_maintenance_policy
 
         - name: Get list of VMs in cluster
-          ovirt_vms_facts:
+          ovirt_vm_facts:
             auth: "{{ ovirt_auth }}"
             pattern: "cluster={{ cluster_name }}"
           check_mode: "no"
 
         - name: Shutdown VMs which can be stopped
-          ovirt_vms:
+          ovirt_vm:
             auth: "{{ ovirt_auth }}"
             state: stopped
             name: "{{ item }}"
@@ -50,11 +50,11 @@
           with_items:
             - "{{ stopped_vms | default([]) }}"
 
-        - include: pinned_vms.yml
+        - include_tasks: pinned_vms.yml
 
         # Update only those hosts that aren't in list of hosts were VMs are pinned
         # or if stop_non_migratable_vms is enabled, which means we stop pinned VMs
-        - include: upgrade.yml
+        - include_tasks: upgrade.yml
           with_items:
             - "{{ ovirt_hosts }}"
           when: "item.id not in host_ids or stop_non_migratable_vms"
@@ -62,7 +62,7 @@
       when: ovirt_hosts | length > 0
       always:
         - name: Set original cluster policy
-          ovirt_clusters:
+          ovirt_cluster:
             auth: "{{ ovirt_auth }}"
             name: "{{ cluster_name }}"
             scheduling_policy: "{{ cluster_scheduling_policy }}"
@@ -70,7 +70,7 @@
           when: use_maintenance_policy and cluster_policy.changed | default(false)
 
         - name: Start again stopped VMs
-          ovirt_vms:
+          ovirt_vm:
             auth: "{{ ovirt_auth }}"
             name: "{{ item }}"
             state: running
@@ -79,7 +79,7 @@
             - "{{ stopped_vms | default([]) }}"
 
         - name: Start again pin to host VMs
-          ovirt_vms:
+          ovirt_vm:
             auth: "{{ ovirt_auth }}"
             name: "{{ item }}"
             state: running

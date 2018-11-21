@@ -17,7 +17,7 @@
 
 - block:
     - name: Shutdown non-migratable VMs
-      ovirt_vms:
+      ovirt_vm:
         auth: "{{ ovirt_auth }}"
         state: stopped
         force: true
