@@ -60,6 +60,11 @@ sh build.sh install
 %license LICENSE
 
 %changelog
+* Fri Nov 30 2018 Ondra Machacek <omachace@redhat.com> - 1.1.9-1
+- Require Ansible 2.7.2.
+- Support ovirt.cluster-upgrade name.
+- Remember scheduling policy properties.
+
 * Thu Oct 4 2018 Ondra Machacek <omachace@redhat.com> - 1.1.8-1
 - Fix issue in starting the stopped VMs (#27).
 - Increase timeout for the host upgrade (#24).
