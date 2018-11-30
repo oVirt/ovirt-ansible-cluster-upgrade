@@ -1,5 +1,5 @@
 %global rolename cluster-upgrade
-%global roleprefix oVirt.
+%global roleprefix ovirt.
 %global roleprefix_legacy ovirt-
 %global roleprefix_legacy_uppercase oVirt.
 %global ansible_roles_dir ansible/roles
@@ -14,7 +14,7 @@ Group:          Virtualization/Management
 BuildArch:      noarch
 Url:            http://www.ovirt.org
 
-Requires: ansible >= 2.5
+Requires: ansible >= 2.7.2
 
 %description
 This Ansible role provide funtionality to upgrade cluster of hosts in oVirt engine,
