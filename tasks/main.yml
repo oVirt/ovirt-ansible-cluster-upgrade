@@ -4,6 +4,7 @@
 ## this workarounds it until Ansible resolves the issue:
 - set_fact:
     stop_non_migratable_vms: "{{ stop_non_migratable_vms }}"
+    provided_token: "{{ engine_token | default(lookup('env','OVIRT_TOKEN')) | default('') }}"
 
 - block:
     - name: Login to oVirt
@@ -16,7 +17,7 @@
         token: "{{ engine_token | default(lookup('env','OVIRT_TOKEN')) | default(omit) }}"
         insecure: "{{ engine_insecure | default(true) }}"
       when: ovirt_auth is undefined or not ovirt_auth
-      register: loggedin
+      register: login_result
       tags:
         - always
 
@@ -93,6 +94,8 @@
       ovirt_auth:
         state: absent
         ovirt_auth: "{{ ovirt_auth }}"
-      when: not loggedin.skipped | default(false)
+      when:
+        - login_result.skipped is defined and not login_result.skipped
+        - provided_token != ovirt_auth.token
       tags:
         - always
