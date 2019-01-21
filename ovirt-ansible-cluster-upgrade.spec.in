@@ -60,6 +60,13 @@ sh build.sh install
 %license LICENSE
 
 %changelog
+* Mon Jan 21 2019 Ondra Machacek <omachace@redhat.com> - 1.1.11-1
+- Improve checking of failed upgrade.
+- Skip ovirt_auth logout if the engine_token matches the ovirt_auth token.
+
+* Fri Nov 30 2018 Ondra Machacek <omachace@redhat.com> - 1.1.10-1
+- Bump requirement to Ansible 2.7.2.
+
 * Fri Nov 30 2018 Ondra Machacek <omachace@redhat.com> - 1.1.9-1
 - Require Ansible 2.7.2.
 - Support ovirt.cluster-upgrade name.
