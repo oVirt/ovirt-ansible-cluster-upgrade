@@ -10,3 +10,8 @@ Here is list of updated modules:
 
 - Improve cheecking of failed migration: [PR](https://github.com/ansible/ansible/pull/50489).
   The fix will be available in Ansible 2.8.
+
+2. ovirt_event.py
+
+- Add ovirt_event module to manage events in oVirt: [PR](https://github.com/ansible/ansible/pull/52982).
+  The fix will be available in Ansible 2.8.

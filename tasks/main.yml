@@ -21,18 +21,55 @@
       tags:
         - always
 
+    - name: Get cluster
+      ovirt_cluster_facts:
+        auth: "{{ ovirt_auth }}"
+        pattern: "name={{ cluster_name }}"
+      check_mode: "no"
+
+    - name: Log event cluster upgrade has started
+      ovirt_event_28:
+        auth: "{{ ovirt_auth }}"
+        state: present
+        description: "Cluster upgrade started for {{ cluster_name }}."
+        origin: "cluster_upgrade"
+        custom_id: "{{ 2147483647 | random | int }}"
+        severity: normal
+        cluster: "{{ ovirt_clusters[0].id }}"
+
     - name: Get hosts
       ovirt_host_facts:
         auth: "{{ ovirt_auth }}"
         pattern: "cluster={{ cluster_name | mandatory }} {{ check_upgrade | ternary('', 'update_available=true') }} {{ host_names | map('regex_replace', '(.*)', 'name=\\1') | list | join(' or ') }} {{ host_statuses | map('regex_replace', '(.*)', 'status=\\1') | list | join(' or ') }}"
       check_mode: "no"
 
-    - name: Check if there are hosts to be updated
-      debug:
-        msg: "No hosts to be updated"
+    - block:
+      - name: Print - no hosts to be updated
+        debug:
+          msg: "No hosts to be updated"
+
+      - name: Log event - no hosts to be updated
+        ovirt_event_28:
+          auth: "{{ ovirt_auth }}"
+          state: present
+          description: "There are no hosts to be updated for cluster {{ cluster_name }}."
+          origin: "cluster_upgrade"
+          custom_id: "{{ 2147483647 | random | int }}"
+          severity: normal
+          cluster: "{{ ovirt_clusters[0].id }}"
       when: ovirt_hosts | length == 0
 
     - block:
+        - name: Log event about hosts that will be updated
+          ovirt_event_28:
+            auth: "{{ ovirt_auth }}"
+            state: present
+            description: "Hosts {{ ovirt_hosts | map(attribute='name') | join(',') }} will be updated in cluster {{ cluster_name }}."
+            origin: "cluster_upgrade"
+            custom_id: "{{ 2147483647 | random | int }}"
+            severity: normal
+            cluster: "{{ ovirt_clusters[0].id }}"
+
         - include_tasks: cluster_policy.yml
           when: use_maintenance_policy
 
@@ -60,7 +97,28 @@
             - "{{ ovirt_hosts }}"
           when: "item.id not in host_ids or stop_non_migratable_vms"
 
+        - name: Log event about cluster upgrade finished successfully
+          ovirt_event_28:
+            auth: "{{ ovirt_auth }}"
+            state: present
+            description: "Upgrade of cluster {{ cluster_name }} finished successfully."
+            origin: "cluster_upgrade"
+            severity: normal
+            custom_id: "{{ 2147483647 | random | int }}"
+            cluster: "{{ ovirt_clusters[0].id }}"
+
       when: ovirt_hosts | length > 0
+      rescue:
+        - name: Log event about cluster upgrade failed
+          ovirt_event_28:
+            auth: "{{ ovirt_auth }}"
+            state: present
+            description: "Upgrade of cluster {{ cluster_name }} failed."
+            origin: "cluster_upgrade"
+            custom_id: "{{ 2147483647 | random | int }}"
+            severity: error
+            cluster: "{{ ovirt_clusters[0].id }}"
+
       always:
         - name: Set original cluster policy
           ovirt_cluster:
