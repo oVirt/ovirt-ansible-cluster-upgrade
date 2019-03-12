@@ -60,6 +60,9 @@ sh build.sh install
 %license LICENSE
 
 %changelog
+* Tue Mar 12 2019 Ondra Machacek <omachace@redhat.com> - 1.1.12-1
+- Log status about upgrade to events.
+
 * Mon Jan 21 2019 Ondra Machacek <omachace@redhat.com> - 1.1.11-1
 - Improve checking of failed upgrade.
 - Skip ovirt_auth logout if the engine_token matches the ovirt_auth token.
