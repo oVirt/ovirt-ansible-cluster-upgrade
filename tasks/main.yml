@@ -60,11 +60,11 @@
       when: ovirt_hosts | length == 0
 
     - block:
-        - name: Log event about hosts that will be updated
+        - name: Log event about hosts that are marked to be updated
           ovirt_event_28:
             auth: "{{ ovirt_auth }}"
             state: present
-            description: "Hosts {{ ovirt_hosts | map(attribute='name') | join(',') }} will be updated in cluster {{ cluster_name }}."
+            description: "Hosts {{ ovirt_hosts | map(attribute='name') | join(',') }} are marked to be updated in cluster {{ cluster_name }}."
             origin: "cluster_upgrade"
             custom_id: "{{ 2147483647 | random | int }}"
             severity: normal
