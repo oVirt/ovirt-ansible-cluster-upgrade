@@ -60,6 +60,9 @@ sh build.sh install
 %license LICENSE
 
 %changelog
+* Wed Mar 27 2019 Ondra Machacek <omachace@redhat.com> - 1.1.13-1
+- Set cluster in upgrade proccess.
+
 * Tue Mar 12 2019 Ondra Machacek <omachace@redhat.com> - 1.1.12-1
 - Log status about upgrade to events.
 
