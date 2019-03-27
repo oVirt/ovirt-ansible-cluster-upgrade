@@ -18,11 +18,6 @@
   set_fact:
     cluster_scheduling_policy_properties: "{{ ovirt_clusters[0].custom_scheduling_policy_properties }}"
 
-- name: Get API facts
-  ovirt_api_facts:
-    auth: "{{ ovirt_auth }}"
-  check_mode: "no"
-
 - name: Set in cluster upgrade policy
   ovirt_cluster:
     auth: "{{ ovirt_auth }}"

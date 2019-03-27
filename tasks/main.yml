@@ -21,11 +21,30 @@
       tags:
         - always
 
+    - name: Get API facts
+      ovirt_api_facts:
+        auth: "{{ ovirt_auth }}"
+      check_mode: "no"
+
     - name: Get cluster
       ovirt_cluster_facts:
         auth: "{{ ovirt_auth }}"
         pattern: "name={{ cluster_name }}"
       check_mode: "no"
+
+    - name: Set cluster upgrade status in progress
+      no_log: true
+      uri:
+        url: "{{ ovirt_auth.url }}/clusters/{{ ovirt_clusters[0].id }}/upgrade"
+        method: POST
+        body_format: json
+        validate_certs: false
+        headers:
+          Authorization: "Bearer {{ ovirt_auth.token }}"
+        body:
+          upgrade_action: start
+      register: upgrade_set
+      when: ovirt_api.product_info.version.major >= 4 and ovirt_api.product_info.version.major >= 3
 
     - name: Log event cluster upgrade has started
       ovirt_event_28:
@@ -148,6 +167,21 @@
           when: "stop_non_migratable_vms"
 
   always:
+    - name: Set cluster upgrade status to finished
+      no_log: true
+      uri:
+        url: "{{ ovirt_auth.url }}/clusters/{{ ovirt_clusters[0].id }}/upgrade"
+        validate_certs: false
+        method: POST
+        body_format: json
+        headers:
+          Authorization: "Bearer {{ ovirt_auth.token }}"
+        body:
+          upgrade_action: finish
+      when:
+        - upgrade_set is defined and not upgrade_set.failed
+        - ovirt_api.product_info.version.major >= 4 and ovirt_api.product_info.version.major >= 3
+
     - name: Logout from oVirt
       ovirt_auth:
         state: absent
