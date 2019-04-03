@@ -59,7 +59,7 @@
     - name: Get hosts
       ovirt_host_facts:
         auth: "{{ ovirt_auth }}"
-        pattern: "cluster={{ cluster_name | mandatory }} {{ check_upgrade | ternary('', 'update_available=true') }} {{ host_names | map('regex_replace', '(.*)', 'name=\\1') | list | join(' or ') }} {{ host_statuses | map('regex_replace', '(.*)', 'status=\\1') | list | join(' or ') }}"
+        pattern: "cluster={{ cluster_name | mandatory }} {{ check_upgrade | ternary('', 'update_available=true') }} {{ host_names | map('regex_replace', '^(.*)$', 'name=\\1') | list | join(' or ') }} {{ host_statuses | map('regex_replace', '^(.*)$', 'status=\\1') | list | join(' or ') }}"
       check_mode: "no"
 
     - block:
