@@ -44,7 +44,7 @@
         body:
           upgrade_action: start
       register: upgrade_set
-      when: ovirt_api.product_info.version.major >= 4 and ovirt_api.product_info.version.major >= 3
+      when: ovirt_api.product_info.version.major >= 4 and ovirt_api.product_info.version.minor >= 3
 
     - name: Log event cluster upgrade has started
       ovirt_event_28:
@@ -180,7 +180,7 @@
           upgrade_action: finish
       when:
         - upgrade_set is defined and not upgrade_set.failed
-        - ovirt_api.product_info.version.major >= 4 and ovirt_api.product_info.version.major >= 3
+        - ovirt_api.product_info.version.major >= 4 and ovirt_api.product_info.version.minor >= 3
 
     - name: Logout from oVirt
       ovirt_auth:
