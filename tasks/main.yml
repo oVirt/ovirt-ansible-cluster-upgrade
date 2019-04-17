@@ -98,15 +98,6 @@
             pattern: "cluster={{ cluster_name }}"
           check_mode: "no"
 
-        - name: Shutdown VMs which can be stopped
-          ovirt_vm:
-            auth: "{{ ovirt_auth }}"
-            state: stopped
-            name: "{{ item }}"
-            force: true
-          with_items:
-            - "{{ stopped_vms | default([]) }}"
-
         - include_tasks: pinned_vms.yml
 
         # Update only those hosts that aren't in list of hosts were VMs are pinned

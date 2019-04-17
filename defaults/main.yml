@@ -10,3 +10,4 @@ host_statuses:
   - up
 host_names:
   - '*'
+pinned_vms_names: []
