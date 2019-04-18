@@ -170,7 +170,7 @@
         body:
           upgrade_action: finish
       when:
-        - upgrade_set is defined and not upgrade_set.failed
+        - upgrade_set is defined and not upgrade_set.failed | default(false)
         - ovirt_api.product_info.version.major >= 4 and ovirt_api.product_info.version.minor >= 3
 
     - name: Logout from oVirt
