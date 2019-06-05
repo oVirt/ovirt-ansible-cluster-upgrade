@@ -2,7 +2,8 @@
 ## https://github.com/ansible/ansible/issues/22397
 ## Ansible 2.3 generates a WARNING when using {{ }} in defaults variables of role
 ## this workarounds it until Ansible resolves the issue:
-- set_fact:
+- name: Initialize variables
+  set_fact:
     stop_non_migratable_vms: "{{ stop_non_migratable_vms }}"
     provided_token: "{{ engine_token | default(lookup('env','OVIRT_TOKEN')) | default('') }}"
 

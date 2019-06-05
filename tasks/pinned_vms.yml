@@ -14,4 +14,3 @@
 - name: Create list of host IDs which has pinned VM
   set_fact:
     host_ids: "{{ host_ids_result.results | rejectattr('ansible_facts', 'undefined') | map(attribute='ansible_facts.host_ids_items') | list }}"
-
