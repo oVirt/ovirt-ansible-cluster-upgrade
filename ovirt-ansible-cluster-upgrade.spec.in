@@ -60,6 +60,10 @@ sh build.sh install
 %license LICENSE
 
 %changelog
+* Thu Sep 5 2019 Ondra Machacek <omachace@redhat.com> - 1.1.14-1
+- Add jobs to notify about cluster upgrade status.
+- Migrate user migratable vms.
+
 * Wed Mar 27 2019 Ondra Machacek <omachace@redhat.com> - 1.1.13-1
 - Set cluster in upgrade proccess.
 
