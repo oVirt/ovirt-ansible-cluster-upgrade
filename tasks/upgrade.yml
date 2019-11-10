@@ -5,7 +5,7 @@
   check_mode: "no"
 
 - name: Move user migratable vms
-  ovirt_vm_28:
+  ovirt_vm:
     auth: "{{ ovirt_auth }}"
     force_migrate: true
     migrate: true
@@ -38,7 +38,7 @@
     pinned_vms_names: "{{ pinned_vms_names + pinned_to_host_vms.results | selectattr('changed') | map(attribute='item.name') | list }}"
 
 - name: Start ovirt job step
-  ovirt_job_29:
+  ovirt_job:
     auth: "{{ ovirt_auth }}"
     description: "Upgrading hosts"
     steps:
@@ -46,7 +46,7 @@
 
 - name: Upgrade host
   # TODO: change to ovirt_host, when Ansible 2.8 is out:
-  ovirt_host_28:
+  ovirt_host:
     auth: "{{ ovirt_auth }}"
     name: "{{ item.name }}"
     state: upgraded
@@ -55,7 +55,7 @@
     timeout: "{{ upgrade_timeout }}"
 
 - name: Finish ovirt job step
-  ovirt_job_29:
+  ovirt_job:
     auth: "{{ ovirt_auth }}"
     description: "Upgrading hosts"
     steps:
