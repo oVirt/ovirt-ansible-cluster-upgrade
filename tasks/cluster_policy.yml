@@ -1,13 +1,7 @@
-- name: Get cluster facts
-  ovirt_cluster_facts:
-    auth: "{{ ovirt_auth }}"
-    pattern: "name={{ cluster_name }}"
-  check_mode: "no"
-
 - name: Get name of the original scheduling policy
-  ovirt_scheduling_policy_facts:
+  ovirt_scheduling_policy_info:
     auth: "{{ ovirt_auth }}"
-    id: "{{ ovirt_clusters[0].scheduling_policy.id }}"
+    id: "{{ cluster_info.ovirt_clusters[0].scheduling_policy.id }}"
   check_mode: "no"
 
 - name: Remember the cluster scheduling policy
@@ -25,5 +19,5 @@
     scheduling_policy: cluster_maintenance
   register: cluster_policy
   when:
-    - (ovirt_api.product_info.version.major >= 4 and ovirt_api.product_info.version.major >= 2) or
-      (ovirt_api.product_info.version.major == 4 and ovirt_api.product_info.version.major == 1 and ovirt_api.product_info.version.revision >= 4)
+    - (api_info.ovirt_api.product_info.version.major >= 4 and api_info.ovirt_api.product_info.version.major >= 2) or
+      (api_info.ovirt_api.product_info.version.major == 4 and api_info.ovirt_api.product_info.version.major == 1 and api_info.ovirt_api.product_info.version.revision >= 4)

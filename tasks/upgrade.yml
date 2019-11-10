@@ -1,5 +1,5 @@
 - name: Get list of VMs in host
-  ovirt_vm_facts:
+  ovirt_vm_info:
     auth: "{{ ovirt_auth }}"
     pattern: "cluster={{ cluster_name }} and host={{ item.name }} and status=up"
   check_mode: "no"
@@ -45,7 +45,6 @@
       - description: "Upgrading host: {{ item.name }}"
 
 - name: Upgrade host
-  # TODO: change to ovirt_host, when Ansible 2.8 is out:
   ovirt_host:
     auth: "{{ ovirt_auth }}"
     name: "{{ item.name }}"
