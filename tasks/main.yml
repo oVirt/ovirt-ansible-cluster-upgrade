@@ -101,6 +101,7 @@
             auth: "{{ ovirt_auth }}"
             pattern: "cluster={{ cluster_name }}"
           check_mode: "no"
+          register: vms_in_cluster
 
         - include_tasks: pinned_vms.yml
 

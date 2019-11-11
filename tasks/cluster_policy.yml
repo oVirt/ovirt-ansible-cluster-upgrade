@@ -3,10 +3,11 @@
     auth: "{{ ovirt_auth }}"
     id: "{{ cluster_info.ovirt_clusters[0].scheduling_policy.id }}"
   check_mode: "no"
+  register: sp_info
 
 - name: Remember the cluster scheduling policy
   set_fact:
-    cluster_scheduling_policy: "{{ ovirt_scheduling_policies[0].name }}"
+    cluster_scheduling_policy: "{{ sp_info.ovirt_scheduling_policies[0].name }}"
 
 - name: Remember the cluster scheduling policy properties
   set_fact:

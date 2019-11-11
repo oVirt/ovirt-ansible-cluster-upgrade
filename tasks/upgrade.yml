@@ -15,7 +15,7 @@
   when:
     - "item['placement_policy']['affinity'] == 'user_migratable'"
   with_items:
-    - "{{ ovirt_vms }}"
+    - "{{ vms_in_cluster.ovirt_vms }}"
   loop_control:
     label: "{{ item.name }}"
 
@@ -26,7 +26,7 @@
     force: true
     name: "{{ item.name }}"
   with_items:
-    - "{{ ovirt_vms }}"
+    - "{{ vms_in_cluster.ovirt_vms }}"
   when:
     - "item['placement_policy']['affinity'] == 'pinned'"
   loop_control:
