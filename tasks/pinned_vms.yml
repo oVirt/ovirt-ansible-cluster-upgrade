@@ -3,7 +3,7 @@
   set_fact:
     host_ids_items: "{{ item.host.id }}"
   with_items:
-    - "{{ ovirt_vms | default([]) }}"
+    - "{{ vms_in_cluster.ovirt_vms | default([]) }}"
   when:
     - "item['placement_policy']['affinity'] != 'migratable'"
     - "item.host is defined"

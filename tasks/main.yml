@@ -22,21 +22,23 @@
       tags:
         - always
 
-    - name: Get API facts
-      ovirt_api_facts:
+    - name: Get API info
+      ovirt_api_info:
         auth: "{{ ovirt_auth }}"
+      register: api_info
       check_mode: "no"
 
-    - name: Get cluster
-      ovirt_cluster_facts:
+    - name: Get cluster info
+      ovirt_cluster_info:
         auth: "{{ ovirt_auth }}"
         pattern: "name={{ cluster_name }}"
       check_mode: "no"
+      register: cluster_info
 
     - name: Set cluster upgrade status in progress
       no_log: true
       uri:
-        url: "{{ ovirt_auth.url }}/clusters/{{ ovirt_clusters[0].id }}/upgrade"
+        url: "{{ ovirt_auth.url }}/clusters/{{ cluster_info.ovirt_clusters[0].id }}/upgrade"
         method: POST
         body_format: json
         validate_certs: false
@@ -45,23 +47,24 @@
         body:
           upgrade_action: start
       register: upgrade_set
-      when: ovirt_api.product_info.version.major >= 4 and ovirt_api.product_info.version.minor >= 3
+      when: api_info.ovirt_api.product_info.version.major >= 4 and api_info.ovirt_api.product_info.version.minor >= 3
 
     - name: Log event cluster upgrade has started
-      ovirt_event_28:
+      ovirt_event:
         auth: "{{ ovirt_auth }}"
         state: present
         description: "Cluster upgrade started for {{ cluster_name }}."
         origin: "cluster_upgrade"
         custom_id: "{{ 2147483647 | random | int }}"
         severity: normal
-        cluster: "{{ ovirt_clusters[0].id }}"
+        cluster: "{{ cluster_info.ovirt_clusters[0].id }}"
 
     - name: Get hosts
-      ovirt_host_facts:
+      ovirt_host_info:
         auth: "{{ ovirt_auth }}"
         pattern: "cluster={{ cluster_name | mandatory }} {{ check_upgrade | ternary('', 'update_available=true') }} {{ host_names | map('regex_replace', '^(.*)$', 'name=\\1') | list | join(' or ') }} {{ host_statuses | map('regex_replace', '^(.*)$', 'status=\\1') | list | join(' or ') }}"
       check_mode: "no"
+      register: host_info
 
     - block:
       - name: Print - no hosts to be updated
@@ -69,40 +72,41 @@
           msg: "No hosts to be updated"
 
       - name: Log event - no hosts to be updated
-        ovirt_event_28:
+        ovirt_event:
           auth: "{{ ovirt_auth }}"
           state: present
           description: "There are no hosts to be updated for cluster {{ cluster_name }}."
           origin: "cluster_upgrade"
           custom_id: "{{ 2147483647 | random | int }}"
           severity: normal
-          cluster: "{{ ovirt_clusters[0].id }}"
-      when: ovirt_hosts | length == 0
+          cluster: "{{ cluster_info.ovirt_clusters[0].id }}"
+      when: host_info.ovirt_hosts | length == 0
 
     - block:
         - name: Log event about hosts that are marked to be updated
-          ovirt_event_28:
+          ovirt_event:
             auth: "{{ ovirt_auth }}"
             state: present
-            description: "Hosts {{ ovirt_hosts | map(attribute='name') | join(',') }} are marked to be updated in cluster {{ cluster_name }}."
+            description: "Hosts {{ host_info.ovirt_hosts | map(attribute='name') | join(',') }} are marked to be updated in cluster {{ cluster_name }}."
             origin: "cluster_upgrade"
             custom_id: "{{ 2147483647 | random | int }}"
             severity: normal
-            cluster: "{{ ovirt_clusters[0].id }}"
+            cluster: "{{ cluster_info.ovirt_clusters[0].id }}"
 
         - include_tasks: cluster_policy.yml
           when: use_maintenance_policy
 
         - name: Get list of VMs in cluster
-          ovirt_vm_facts:
+          ovirt_vm_info:
             auth: "{{ ovirt_auth }}"
             pattern: "cluster={{ cluster_name }}"
           check_mode: "no"
+          register: vms_in_cluster
 
         - include_tasks: pinned_vms.yml
 
         - name: Start ovirt job session
-          ovirt_job_29:
+          ovirt_job:
             auth: "{{ ovirt_auth }}"
             description: "Upgrading hosts"
 
@@ -110,36 +114,36 @@
         # or if stop_non_migratable_vms is enabled, which means we stop pinned VMs
         - include_tasks: upgrade.yml
           with_items:
-            - "{{ ovirt_hosts }}"
+            - "{{ host_info.ovirt_hosts }}"
           when: "item.id not in host_ids or stop_non_migratable_vms"
 
         - name: Start ovirt job session
-          ovirt_job_29:
+          ovirt_job:
             auth: "{{ ovirt_auth }}"
             description: "Upgrading hosts"
             state: finished
 
         - name: Log event about cluster upgrade finished successfully
-          ovirt_event_28:
+          ovirt_event:
             auth: "{{ ovirt_auth }}"
             state: present
             description: "Upgrade of cluster {{ cluster_name }} finished successfully."
             origin: "cluster_upgrade"
             severity: normal
             custom_id: "{{ 2147483647 | random | int }}"
-            cluster: "{{ ovirt_clusters[0].id }}"
+            cluster: "{{ cluster_info.ovirt_clusters[0].id }}"
 
-      when: ovirt_hosts | length > 0
+      when: host_info.ovirt_hosts | length > 0
       rescue:
         - name: Log event about cluster upgrade failed
-          ovirt_event_28:
+          ovirt_event:
             auth: "{{ ovirt_auth }}"
             state: present
             description: "Upgrade of cluster {{ cluster_name }} failed."
             origin: "cluster_upgrade"
             custom_id: "{{ 2147483647 | random | int }}"
             severity: error
-            cluster: "{{ ovirt_clusters[0].id }}"
+            cluster: "{{ cluster_info.ovirt_clusters[0].id }}"
 
       always:
         - name: Set original cluster policy
@@ -173,7 +177,7 @@
     - name: Set cluster upgrade status to finished
       no_log: true
       uri:
-        url: "{{ ovirt_auth.url }}/clusters/{{ ovirt_clusters[0].id }}/upgrade"
+        url: "{{ ovirt_auth.url }}/clusters/{{ cluster_info.ovirt_clusters[0].id }}/upgrade"
         validate_certs: false
         method: POST
         body_format: json
@@ -183,7 +187,7 @@
           upgrade_action: finish
       when:
         - upgrade_set is defined and not upgrade_set.failed | default(false)
-        - ovirt_api.product_info.version.major >= 4 and ovirt_api.product_info.version.minor >= 3
+        - api_info.ovirt_api.product_info.version.major >= 4 and api_info.ovirt_api.product_info.version.minor >= 3
 
     - name: Logout from oVirt
       ovirt_auth:
