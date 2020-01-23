@@ -32,6 +32,8 @@
       ovirt_cluster_info:
         auth: "{{ ovirt_auth }}"
         pattern: "name={{ cluster_name }}"
+        fetch_nested: True
+        nested_attributes: name
       check_mode: "no"
       register: cluster_info
 
