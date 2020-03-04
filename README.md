@@ -41,6 +41,9 @@ Role Variables
 | check_upgrade           | false                 | If true, run check_for_upgrade action on all hosts before executing upgrade on them. If false, run upgrade only for hosts with available upgrades and ignore all other hosts. |
 | reboot_after_upgrade    | true                  | If true reboot hosts after successful upgrade. |
 | use_maintenance_policy  | true                  | If true the cluster policy will be switched to cluster_maintenance during upgrade otherwise the policy will be unchanged. |
+| healing_in_progress_checks            | 6                     | Maximum number of attempts to check if gluster healing is still in progress. |
+| healing_in_progress_check_delay              | 300                   | The delay in seconds between each attempt to check if gluster healing is still in progress.    |
+| wait_to_finish_healing  | 5                     | Delay in minutes to wait to finish gluster healing process after successful host upgrade.             |
 
 Dependencies
 ------------
