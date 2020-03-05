@@ -147,6 +147,12 @@
             severity: error
             cluster: "{{ cluster_info.ovirt_clusters[0].id }}"
 
+        - name: Update job failed
+          ovirt_job:
+            auth: "{{ ovirt_auth }}"
+            description: "Upgrading hosts"
+            state: failed
+
       always:
         - name: Set original cluster policy
           ovirt_cluster:
