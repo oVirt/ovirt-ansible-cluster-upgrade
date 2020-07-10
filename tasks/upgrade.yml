@@ -45,6 +45,7 @@
       - description: "Upgrading host: {{ item.name }}"
 
 - name: Gather self-heal facts about all gluster hosts in the cluster
+  connection: ssh
   gluster_heal_info:
     name: "{{ volume_item.name }}"
     status_filter: self-heal
