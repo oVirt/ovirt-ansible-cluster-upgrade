@@ -55,6 +55,7 @@
      self_heal_status is defined and
      self_heal_status.glusterfs.heal_info | map(attribute='no_of_entries') | select('defined') | list | map('int') | sum == 0
   delegate_to: "{{ host_info.ovirt_hosts[0].address }}"
+  connection: ssh
   with_items:
     - "{{ cluster_info.ovirt_clusters[0].gluster_volumes }}"
   loop_control:
