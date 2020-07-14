@@ -60,6 +60,9 @@ sh build.sh install
 %license LICENSE
 
 %changelog
+* Fri May 1 2020 Martin Necas <mnecas@redhat.com> - 1.2.3-1
+- Fix ssh connection for remote host
+
 * Fri May 1 2020 Martin Necas <mnecas@redhat.com> - 1.2.2-1
 - Add job fail when cluster upgrade fails.
 - Add gluster healing check.
